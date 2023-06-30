@@ -1,24 +1,25 @@
 package tracey_hawkins.capstone.GiterDone.controller;
 
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tracey_hawkins.capstone.GiterDone.models.Task;
-import tracey_hawkins.capstone.GiterDone.models.TodoList;
+import tracey_hawkins.capstone.GiterDone.models.*;
 import tracey_hawkins.capstone.GiterDone.repositories.TaskRepository;
 import tracey_hawkins.capstone.GiterDone.repositories.TaskDescriptionRepository;
 
 
 import java.util.NoSuchElementException;
 
-@RestController
+@Controller
 @RequestMapping("/todos/{todoId}/tasks")
 public class TaskController {
 
     private final TaskDescriptionRepository todoListRepository;
     private final TaskRepository taskRepository;
 
-    public TaskController(TaskDescriptionRepository todoListRepository, TaskRepository taskRepository) {
-        this.todoListRepository = todoListRepository;
+    public TaskController(TaskDescriptionRepository taskDescriptionRepository, TaskRepository taskRepository) {
+        this.todoListRepository] = todoListRepository;
         this.taskRepository = taskRepository;
     }
 

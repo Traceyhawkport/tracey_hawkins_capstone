@@ -10,7 +10,7 @@ import tracey_hawkins.capstone.GiterDone.repositories.UserRepository;
 
 import java.util.NoSuchElementException;
 
-@RestController
+@Controller
 @RequestMapping("/users")
 public class UserController {
 

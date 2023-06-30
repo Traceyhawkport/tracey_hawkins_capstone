@@ -10,14 +10,14 @@ import tracey_hawkins.capstone.GiterDone.repositories.TaskDescriptionRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@RestController
+@Controller
 @RequestMapping("/todolists")
-public class TodoListController {
+public class TaskDescriptionController {
 
     private final TaskDescriptionRepository todoListRepository;
 
     @Autowired
-    public TodoListController(TaskDescriptionRepository todoListRepository) {
+    public TaskDescriptionController(TaskDescriptionRepository todoListRepository) {
         this.todoListRepository = todoListRepository;
     }
 

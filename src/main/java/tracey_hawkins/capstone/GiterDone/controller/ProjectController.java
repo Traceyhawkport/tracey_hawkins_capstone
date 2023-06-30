@@ -1,62 +1,73 @@
 package tracey_hawkins.capstone.GiterDone.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 import tracey_hawkins.capstone.GiterDone.models.Project;
+import tracey_hawkins.capstone.GiterDone.models.Task;
 import tracey_hawkins.capstone.GiterDone.repositories.*;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+
 
 @Controller
 @RequestMapping("/projects")
 public class ProjectController {
 
-    private final ProjectService projectService;
+    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
 
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
+    public ProjectController(ProjectRepository projectRepository, TaskRepository taskRepository, TaskRepository todoListRepository) {
+        this.projectRepository = projectRepository;
+
+        this.taskRepository = taskRepository;
     }
 
     @GetMapping
     public List<Project> getAllProjects() {
-        return projectService.getAllProjects();
+        return projectRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
-        Project project = projectService.getProjectById(id);
-        if (project != null) {
-            return ResponseEntity.ok(project);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/{projectId}")
+    public Project getProjectById(@PathVariable Long projectId) {
+        return projectRepository.findById(projectId).orElseThrow(() -> new NoSuchElementException());
     }
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
-        Project createdProject = projectService.createProject(project);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
+    public Project createProject(@RequestBody Project project) {
+        return projectRepository.save(project);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project project) {
-        Project updatedProject = projectService.updateProject(id, project);
-        if (updatedProject != null) {
-            return ResponseEntity.ok(updatedProject);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{projectId}")
+    public Project updateProject(@PathVariable Long projectId, @RequestBody Project updatedProject) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NoSuchElementException());
+        project.setName(updatedProject.getName());
+        // Update other properties as needed
+        return projectRepository.save(project);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        boolean deleted = projectService.deleteProject(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @DeleteMapping("/{projectId}")
+    public void deleteProject(@PathVariable Long projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NoSuchElementException());
+        projectRepository.delete(project);
+    }
+
+    @PostMapping("/{projectId}/tasks")
+    public void addTodoListToProject(@PathVariable Long projectId, @RequestBody Task task) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NoSuchElementException());
+        project.getTodoLists().add(todoList);
+        todoList.setProject(project);
+        projectRepository.save(project);
+        taskRepository.save(todoList);
+    }
+
+    @DeleteMapping("/{projectId}/todolists/{todoListId}")
+    public void removeTodoListFromProject(@PathVariable Long projectId, @PathVariable Long todoListId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new NoSuchElementException());
+        TodoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new NoSuchElementException());
+        project.getTodoLists().remove(todoList);
+        todoList.setProject(null);
+        projectRepository.save(project);
+        todoListRepository.delete(todoList);
     }
 }
